@@ -1,0 +1,179 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile with role assigned by administration",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["ADMIN", "RH", "OPERATIVO"] },
+        "employeeCode": { "type": "string" },
+        "phone": { "type": "string" },
+        "assignedPost": { "type": "string" },
+        "status": { "type": "string", "enum": ["ACTIVO", "INACTIVO", "SUSPENDIDO"] },
+        "createdAt": { "type": "string" },
+        "createdBy": { "type": "string" }
+      },
+      "required": ["uid", "email", "role", "displayName", "status"]
+    },
+    "Task": {
+      "title": "Operative Task / Consigna",
+      "description": "Assigned tasks, security instructions, and rounds for operative guards",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "assignedTo": { "type": "string" },
+        "assignedToName": { "type": "string" },
+        "postLocation": { "type": "string" },
+        "priority": { "type": "string", "enum": ["URGENTE", "NORMAL", "RUTINA"] },
+        "status": { "type": "string", "enum": ["PENDIENTE", "EN_PROGRESO", "COMPLETADA"] },
+        "dueDate": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "completedAt": { "type": "string" }
+      },
+      "required": ["id", "title", "assignedTo", "status", "priority", "createdAt"]
+    },
+    "AuditLog": {
+      "title": "Admin Audit Log",
+      "description": "Record of user activity, role changes, creations, and security operations",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "action": { "type": "string" },
+        "details": { "type": "string" },
+        "performedBy": { "type": "string" },
+        "performedByName": { "type": "string" },
+        "targetUserEmail": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "action", "performedBy", "timestamp"]
+    },
+    "AppSetting": {
+      "title": "General System Settings",
+      "description": "General application configuration parameters",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "companyName": { "type": "string" },
+        "emergencyHotline": { "type": "string" },
+        "shiftToleranceMinutes": { "type": "number" },
+        "securityLevel": { "type": "string" },
+        "alertBroadcast": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "updatedBy": { "type": "string" }
+      },
+      "required": ["id", "companyName"]
+    },
+    "Incident": {
+      "title": "Operative Incident",
+      "description": "Log of incidents and novelties reported by operative security guards",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "reportedBy": { "type": "string" },
+        "reportedByName": { "type": "string" },
+        "guardCode": { "type": "string" },
+        "postLocation": { "type": "string" },
+        "severity": { "type": "string", "enum": ["BAJA", "MEDIA", "ALTA", "CRITICA"] },
+        "category": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "status": { "type": "string", "enum": ["ABIERTO", "EN_REVISION", "RESUELTO"] },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "reportedBy", "postLocation", "severity", "title", "description", "status", "timestamp"]
+    },
+    "Attendance": {
+      "title": "Guard Attendance",
+      "description": "Daily check-in and check-out logs for security operatives",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "guardUid": { "type": "string" },
+        "guardName": { "type": "string" },
+        "guardCode": { "type": "string" },
+        "postLocation": { "type": "string" },
+        "checkInTime": { "type": "string" },
+        "checkOutTime": { "type": "string" },
+        "shift": { "type": "string", "enum": ["MATUTINO_12H", "NOCTURNO_12H", "24X24", "JORNADA_8H"] },
+        "status": { "type": "string", "enum": ["EN_TURNO", "FINALIZADO", "RETARDO"] },
+        "notes": { "type": "string" }
+      },
+      "required": ["id", "guardUid", "guardName", "postLocation", "checkInTime", "status"]
+    },
+    "RHRecord": {
+      "title": "Human Resources Expediente",
+      "description": "Confidential personnel document, certifications, evaluations, and payroll notes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "employeeUid": { "type": "string" },
+        "employeeName": { "type": "string" },
+        "curp": { "type": "string" },
+        "nss": { "type": "string" },
+        "contractType": { "type": "string" },
+        "antidopingStatus": { "type": "string", "enum": ["APROBADO", "PENDIENTE", "RECHAZADO"] },
+        "psicometricoStatus": { "type": "string", "enum": ["APTO", "NO_APTO", "EN_EVALUACION"] },
+        "licenciaArmas": { "type": "string" },
+        "emergencyContact": { "type": "string" },
+        "salaryBase": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "updatedBy": { "type": "string" }
+      },
+      "required": ["id", "employeeUid", "employeeName", "antidopingStatus", "contractType"]
+    },
+    "SecurityPost": {
+      "title": "Security Objective/Post",
+      "description": "Monitored sites, facilities, and assigned posts",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "client": { "type": "string" },
+        "address": { "type": "string" },
+        "requiredGuards": { "type": "number" },
+        "contactPhone": { "type": "string" },
+        "active": { "type": "boolean" }
+      },
+      "required": ["id", "name", "client", "active"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles with strict access roles (ADMIN, RH, OPERATIVO)"
+    },
+    "/tasks/{taskId}": {
+      "schema": { "$ref": "#/entities/Task" },
+      "description": "Operative assigned tasks and consignas"
+    },
+    "/audit_logs/{logId}": {
+      "schema": { "$ref": "#/entities/AuditLog" },
+      "description": "System activity logs for administration"
+    },
+    "/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/AppSetting" },
+      "description": "General system configuration"
+    },
+    "/incidents/{incidentId}": {
+      "schema": { "$ref": "#/entities/Incident" },
+      "description": "Operational incidents, bitacora de novedades"
+    },
+    "/attendances/{attendanceId}": {
+      "schema": { "$ref": "#/entities/Attendance" },
+      "description": "Pass-list, shift check-ins and check-outs"
+    },
+    "/rh_records/{recordId}": {
+      "schema": { "$ref": "#/entities/RHRecord" },
+      "description": "HR confidential personnel files, verifications, antidoping and psychometrics"
+    },
+    "/posts/{postId}": {
+      "schema": { "$ref": "#/entities/SecurityPost" },
+      "description": "Assigned operational security posts and customer sites"
+    }
+  }
+}

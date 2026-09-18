@@ -1,0 +1,6 @@
+{
+  "name": "Seguridad Privada: Operaciones y RH",
+  "description": "PWA integral para empresas de seguridad privada con control de acceso por roles para Administración, Recursos Humanos y Personal Operativo.",
+  "requestFramePermissions": ["camera", "geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

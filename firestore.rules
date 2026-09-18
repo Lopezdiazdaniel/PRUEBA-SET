@@ -1,0 +1,103 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        getUserData().role == 'ADMIN' ||
+        (request.auth.token.email == 'lopzcecy@gmail.com')
+      );
+    }
+
+    function isRH() {
+      return isAuthenticated() && (
+        isAdmin() || getUserData().role == 'RH'
+      );
+    }
+
+    // USERS collection:
+    // Only Admin can create, edit roles, or delete users.
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == userId || isAdmin() || isRH()
+      );
+      allow create: if isAdmin() || (isAuthenticated() && request.auth.uid == userId && !exists(/databases/$(database)/documents/users/{userId}));
+      allow update: if isAdmin() || (
+        isAuthenticated() && request.auth.uid == userId && 
+        request.resource.data.role == resource.data.role
+      );
+      allow delete: if isAdmin();
+    }
+
+    // TASKS (Consignas / Tareas operativas):
+    // Operatives can only read and update their own assigned tasks.
+    // Admin and RH can create, assign and manage all tasks.
+    match /tasks/{taskId} {
+      allow read: if isAuthenticated() && (
+        isAdmin() || isRH() || resource.data.assignedTo == request.auth.uid
+      );
+      allow create: if isAdmin() || isRH();
+      allow update: if isAuthenticated() && (
+        isAdmin() || isRH() || resource.data.assignedTo == request.auth.uid
+      );
+      allow delete: if isAdmin() || isRH();
+    }
+
+    // AUDIT LOGS:
+    // Admin can read all audit logs.
+    // Authenticated users can append logs for tracking.
+    match /audit_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+
+    // SETTINGS:
+    // All authenticated users can read company settings (company name, hotline).
+    // Only Admin can modify settings.
+    match /settings/{settingId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // INCIDENTS:
+    match /incidents/{incidentId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin() || (
+        isAuthenticated() && resource.data.reportedBy == request.auth.uid
+      );
+    }
+
+    // ATTENDANCE:
+    match /attendances/{attendanceId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (
+        isAdmin() || isRH() || resource.data.guardUid == request.auth.uid
+      );
+      allow delete: if isAdmin();
+    }
+
+    // RH RECORDS (Recursos Humanos):
+    // Strictly confidential: Only RH and ADMIN can read/write!
+    match /rh_records/{recordId} {
+      allow read, write: if isRH();
+    }
+
+    // SECURITY POSTS:
+    match /posts/{postId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || isRH();
+    }
+  }
+}
